@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 
+st.set_page_config(layout=("wide"))
+
 def load_data():
     try:
         data = pd.read_excel("todo_list.xlsx")
@@ -61,13 +63,43 @@ def main():
 
     if action == "🆕 Adicionar Tarefa":
         st.subheader("Adicionar Tarefa")
-        data_inicio = st.date_input("Data Inicial", format="DD/MM/YYYY")
-        data_final = st.date_input("Data Final", format="DD/MM/YYYY")
-        tarefa = st.text_input("Nome da Tarefa")
-        status = st.radio("Status", ["A Fazer", "Fazendo", "Feito"])
-        if st.button("Adicionar"):
-            new_task = {"Data Inicial": data_inicio, "Tarefa": tarefa, "Status": status, "Data Final": data_final}
-            data = add_task(data, new_task)
+        
+        # Dividindo a tela em três colunas
+        col1, col2, col3, col4 = st.columns(4)
+    
+        # Segunda coluna para o date_input da Data Inicial
+        with col2:
+            data_inicio = st.date_input("Data Inicial", format="DD/MM/YYYY")
+    
+        # Terceira coluna para o date_input da Data Final
+        with col3:
+            data_final = st.date_input("Data Final", format="DD/MM/YYYY")
+    
+        # Primeira coluna para o text_input da Tarefa
+        with col1:    
+            tarefa = st.text_input("Nome da Tarefa")
+    
+        # Quarta coluna para o radio de Status e botão de Adicionar
+        with col4:
+            status = st.radio("Status", ["A Fazer", "Fazendo", "Feito"])
+    
+            # Adicionando uma caixa de texto para inserir uma observação
+            observacao = st.text_area("Observação", "")
+    
+            # Quando o botão "Adicionar" é clicado
+            if st.button("Adicionar"):
+                # Criando um dicionário com os dados da nova tarefa
+                new_task = {
+                    "Data Inicial": data_inicio,
+                    "Data Final": data_final,
+                    "Tarefa": tarefa,
+                    "Status": status,
+                    "Observação": observacao  # Adicionando a observação à nova tarefa
+                }
+                # Adicionando a nova tarefa aos dados existentes
+                data = add_task(data, new_task)
+    
+        
 
     elif action == "⚒️ Editar Tarefa":
         st.subheader("Editar Tarefa")
