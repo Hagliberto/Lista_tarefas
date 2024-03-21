@@ -9,9 +9,14 @@ def load_data():
         data = pd.read_excel("todo_list.xlsx")
         st.success("Dados carregados com sucesso!")
     except FileNotFoundError:
-        data = pd.DataFrame(columns=["Data Inicial", "Data Final", "Tarefa", "Status"])
+        data = pd.DataFrame(columns=["Data Inicial", "Data Final", "Tarefa", "Status", "Observação"])  # Adicionando a coluna "Observação"
         st.warning("Nenhum arquivo encontrado. Criada uma nova lista de tarefas vazia.")
+    except KeyError:
+        # Se a coluna "Observação" estiver ausente no arquivo Excel, adicione-a ao dataframe
+        data["Observação"] = ""
+        st.warning("A coluna 'Observação' não foi encontrada no arquivo. Foi adicionada uma coluna vazia.")
     return data
+
 
 def save_data(data):
     data.to_excel("todo_list.xlsx", index=False)
@@ -56,10 +61,10 @@ def format_date(date):
     return date.strftime("%d/%m/%Y")
 
 def main():
-    st.title("Todo List App")
+    st.title("Lista de Tarefas")
     data = load_data()
 
-    action = st.sidebar.selectbox("Selecione uma ação", ["🆕 Adicionar Tarefa", "⚒️ Editar Tarefa", "⛔ Remover Tarefa", "🔍 Pesquisar Tarefa"])
+    action = st.sidebar.selectbox("Selecione uma ação", ["🏠 Home", "🆕 Adicionar Tarefa", "⚒️ Editar Tarefa", "⛔ Remover Tarefa", "🔍 Pesquisar Tarefa"])
 
     if action == "🆕 Adicionar Tarefa":
         st.subheader("Adicionar Tarefa")
@@ -98,6 +103,7 @@ def main():
                 }
                 # Adicionando a nova tarefa aos dados existentes
                 data = add_task(data, new_task)
+            
     
         
 
@@ -130,7 +136,6 @@ def main():
         search_results = search_task(data, search_term)
         st.dataframe(search_results)
 
-    st.subheader("Lista de Tarefas")
     st.dataframe(data)
 
 if __name__ == "__main__":
